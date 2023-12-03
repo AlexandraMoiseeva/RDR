@@ -5,20 +5,25 @@ using UnityEngine.UIElements;
 
 public class ComponentSettingsUI : MonoBehaviour
 {
-    public List<MenuPanelComponent> componentPanels;
+    public List<GameObject> componentPanels;
 
     public SliderSync batteryMass_slider, batteryCapacity_slider;
     public SliderSync quadMass_slider;
     public SliderSync camMass_slider, camFOV_slider, camAngle_slider;
 
+    GameObject body;
+
     void Start()
     {
         SetDataToUI();
         ShowPanel(null);
+
+        body = GameObject.Find("Mesh1");
     }
 
     private void SetDataToUI()
     {
+        print(CameraProperties.mass);
         camMass_slider.SetValue(CameraProperties.mass);
         camFOV_slider.SetValue(CameraProperties.FOV);
         camAngle_slider.SetValue(CameraProperties.angle);
@@ -31,6 +36,7 @@ public class ComponentSettingsUI : MonoBehaviour
 
     private void SaveCameraProperties()
     {
+        print(camMass_slider.GetValue());
         CameraProperties.mass = camMass_slider.GetValue();
         CameraProperties.FOV = camFOV_slider.GetValue();
         CameraProperties.angle = camAngle_slider.GetValue();
@@ -52,17 +58,29 @@ public class ComponentSettingsUI : MonoBehaviour
         SaveCameraProperties();
         SaveBattery();
         SaveQuadProperties();
+        ColorDrone.mesh1Color = body.GetComponent<MeshRenderer>().materials[1].color;
         DataManager.SaveAll();
     }
 
     public void ShowPanel(string panelName)
     {
-        foreach (MenuPanelComponent panel in componentPanels)
+        foreach (GameObject panel in componentPanels)
         {
             if (panel.name == panelName)
-                panel.Show();
+            {
+                panel.GetComponent<MenuPanelComponent>().Show();
+                transform.Find("ButtonPanel").Find(panel.name + "Button").Find("Image").gameObject.SetActive(true);
+            }
             else
-                panel.Hide();
+            {
+                panel.GetComponent<MenuPanelComponent>().Hide();
+                transform.Find("ButtonPanel").Find(panel.name + "Button").Find("Image").gameObject.SetActive(false);
+            }
         }
+    }
+
+    void OnDisable()
+    {
+        body.GetComponent<MeshRenderer>().materials[1].color = ColorDrone.mesh1Color;
     }
 }

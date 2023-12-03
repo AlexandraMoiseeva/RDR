@@ -41,6 +41,7 @@ public class Quad : MonoBehaviour
         pidManager = GetComponent<PIDManager>();
         audioSourceQuad = GetComponent<AudioSource>();
         body = GetComponent<Rigidbody>();
+        GameObject.Find("Mesh1").GetComponent<MeshRenderer>().materials[1].color = ColorDrone.mesh1Color;
         if (!photonView.IsMine)
         {
             inputManager.enabled = false;

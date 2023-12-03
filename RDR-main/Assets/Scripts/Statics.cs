@@ -12,6 +12,7 @@ public static class DataManager
 		Parameters.Save();
 		CameraProperties.Save();
 		QuadCharacteristics.Save();
+		ColorDrone.Save();
 	}
 
 	static public void LoadAll()
@@ -21,6 +22,7 @@ public static class DataManager
 		Parameters.Load();
 		CameraProperties.Load();
 		QuadCharacteristics.Load();
+		ColorDrone.Load();
 	}
 
 	static public void DeleteAll()
@@ -180,4 +182,36 @@ public static class Parameters
 			if (cm.ToString() == controlMapStr) controlMap = cm;
 		}
     }
+}
+
+public static class ColorDrone
+{
+	static public Color mesh1Color;
+
+	public static void Save()
+    {
+		PlayerPrefs.SetString("mesh1Color", mesh1Color.ToString());
+	}
+
+	public static void Load()
+    {
+		mesh1Color = GetColor(PlayerPrefs.GetString("mesh1Color", "RGBA(0.787, 0.765, 0.000, 1.000)"));
+
+	}
+
+	static Color GetColor(string color)
+	{
+		int a = color.IndexOf('(') + 1;
+		int b = color.Length - 1 - a;
+
+		string[] values = color.Substring(a, b).Split(',');
+
+		var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+		return new Color(
+			float.Parse(values[0], culture),
+			float.Parse(values[1], culture),
+			float.Parse(values[2], culture),
+			float.Parse(values[3], culture));
+	}
 }

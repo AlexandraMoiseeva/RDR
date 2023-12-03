@@ -16,6 +16,9 @@ public class RegistrationPanel : MonoBehaviour
     public TMP_InputField userEmailLogin;
     public TMP_InputField userPasswordLogin;
 
+    public TMP_Text statusResult;
+    public GameObject statusResultObject;
+
     public GameObject loadSceen;
     public Image loading;
 
@@ -57,19 +60,23 @@ public class RegistrationPanel : MonoBehaviour
             }
         };
 
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSucces, OnError);
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnEnterSucces, OnError);
     }
 
     void OnRegisterSucces(RegisterPlayFabUserResult result)
     {
-        print("success");
+        statusResult.text = "Успешно";
+        statusResultObject.GetComponent<Animator>().SetTrigger("Appear");
     }
 
-    void OnLoginSucces(LoginResult result)
+    void OnEnterSucces(LoginResult result)
     {
         string name = null;
         name = result.InfoResultPayload.PlayerProfile.DisplayName;
         DataManager.displayName = name;
+
+        statusResult.text = "Успешно";
+        statusResultObject.GetComponent<Animator>().SetTrigger("Appear");
 
         loadSceen.SetActive(true);
         StartCoroutine(LoadAsync());
@@ -77,7 +84,8 @@ public class RegistrationPanel : MonoBehaviour
 
     void OnError(PlayFabError Error)
     {
-        print(Error);
+        statusResult.text = Error.GenerateErrorReport();
+        statusResultObject.GetComponent<Animator>().SetTrigger("Appear");
     }
 
     IEnumerator LoadAsync()
