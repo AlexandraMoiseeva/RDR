@@ -4,35 +4,51 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 // using Unity.UI;
 
 public class Photon_Manager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private string region;
-    [SerializeField] private string NickName;
-    [SerializeField] private InputField RoomName;
+    private string NickName;
+    [SerializeField]
+    private TMPro.TMP_Dropdown roomListDD;
+    [SerializeField] private TMP_InputField RoomName;
     public Transform[] SpawnPositions;
     
-    [SerializeField] private Transform content;
-    [SerializeField] GameObject player_pref;
+    //[SerializeField] private Transform content;
+    //[SerializeField] GameObject player_pref;
     
     private List<RoomInfo> allRoomsInfo;
     private GameObject player;
     //TODO - connect spawn points instead of a
     void Start()
     {
+        PhotonNetwork.ConnectUsingSettings();
+        NickName = DataManager.displayName;
         Vector3 a = Vector3.zero;
         PlayerPrefs.DeleteAll();
-        PhotonNetwork.ConnectToBestCloudServer();
-        PhotonNetwork.ConnectToRegion(region);
+        //PhotonNetwork.ConnectToBestCloudServer();
+        //PhotonNetwork.ConnectToRegion(region);
         // if (SceneManager.GetActiveScene().name == "map_name")
         // {
         //     player = PhotonNetwork.Instantiate(player_pref.name, a, Quaternion.identity);
         // }
     }
-    
-    public override void OnConnectedToMaster()
+
+    public void RoomListUpdate(List<RoomInfo> roomList)
+    {
+
+        for (int i = 0; i < roomList.Count; i++)
+        {
+            TMPro.TMP_Dropdown.OptionData option = new TMPro.TMP_Dropdown.OptionData();
+            option.text = roomList[i].Name;
+            roomListDD.options.Add(option);
+        }
+    }
+
+    public void OnConnectedToMaster()
     {
         Debug.Log("Connected to" + PhotonNetwork.CloudRegion);
         if (NickName == "")
@@ -49,7 +65,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         }
     }
     
-    public override void OnDisconnected(DisconnectCause cause)
+    public void OnDisconnected(DisconnectCause cause)
     {
         Debug.Log("You was disconnected");
     }
@@ -61,18 +77,34 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         {
             return;
         }
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 5;
-        PhotonNetwork.JoinOrCreateRoom(RoomName.text, roomOptions, TypedLobby.Default);
-        
+        RoomOptions roomOptions = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 5 };
+        //PhotonNetwork.JoinOrCreateRoom(RoomName.text, roomOptions, TypedLobby.Default);
+        if (PhotonNetwork.CreateRoom(RoomName.text, roomOptions, TypedLobby.Default))
+            print("Create room successfully");
+        else
+            print("Create room failed");
+        RoomListUpdate(allRoomsInfo);
+    }
+
+    public void OnClick_CreateRoom()
+    {
+        RoomOptions roomOptions = new RoomOptions() { IsVisible = true, IsOpen = true, MaxPlayers = 4 };
+        if (PhotonNetwork.CreateRoom(RoomName.text, roomOptions, TypedLobby.Default))
+        {
+            print("Create room successfully");
+        }
+        else
+        {
+            print("Create room failed");
+        }
     }
     
-    public override void OnCreatedRoom()
+    public void OnCreatedRoom()
     {
         Debug.Log("You have joined or created a room");
     }
     
-    public override void OnCreateRoomFailed(short returnCode, string message)
+    public void OnCreateRoomFailed(short returnCode, string message)
     {
         Debug.LogError("Failed to create a room");
     }
@@ -83,9 +115,9 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(textName.text);
     }
     
-    public override void OnJoinedRoom()
+    public void OnJoinedRoom()
     {
-        PhotonNetwork.LoadLevel("game_scene");
+        PhotonNetwork.LoadLevel("TestMap");
     }
     
     // TODO - Connect to the random room selection button
@@ -105,7 +137,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    public override void OnLeftRoom()
+    public void OnLeftRoom()
     {
         PhotonNetwork.Destroy(player.gameObject);
         PhotonNetwork.LoadLevel("MainMenuScene");

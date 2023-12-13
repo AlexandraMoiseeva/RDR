@@ -82,6 +82,19 @@ public class RegistrationPanel : MonoBehaviour
         StartCoroutine(LoadAsync());
     }
 
+    public void OnEnterGuest()
+    {
+        string name = null;
+        name = "Guest";
+        DataManager.displayName = name;
+
+        statusResult.text = "Успешно";
+        statusResultObject.GetComponent<Animator>().SetTrigger("Appear");
+
+        loadSceen.SetActive(true);
+        StartCoroutine(LoadAsync());
+    }
+
     void OnError(PlayFabError Error)
     {
         statusResult.text = Error.GenerateErrorReport();

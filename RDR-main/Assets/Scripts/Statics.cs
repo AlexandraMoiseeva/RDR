@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class DataManager
 {
-	static public string displayName = null;
+	static public string displayName = "";
 
 	static public void SaveAll()
 	{
