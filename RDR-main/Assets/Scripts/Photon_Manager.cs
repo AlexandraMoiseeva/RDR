@@ -48,7 +48,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         }
     }
 
-    public void OnConnectedToMaster()
+    public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to" + PhotonNetwork.CloudRegion);
         if (NickName == "")
@@ -65,7 +65,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         }
     }
     
-    public void OnDisconnected(DisconnectCause cause)
+    public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.Log("You was disconnected");
     }
@@ -99,12 +99,12 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         }
     }
     
-    public void OnCreatedRoom()
+    public override void OnCreatedRoom()
     {
         Debug.Log("You have joined or created a room");
     }
     
-    public void OnCreateRoomFailed(short returnCode, string message)
+    public override void OnCreateRoomFailed(short returnCode, string message)
     {
         Debug.LogError("Failed to create a room");
     }
@@ -115,7 +115,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(textName.text);
     }
     
-    public void OnJoinedRoom()
+    public override void OnJoinedRoom()
     {
         PhotonNetwork.LoadLevel("TestMap");
     }
@@ -137,7 +137,7 @@ public class Photon_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.LeaveRoom();
     }
 
-    public void OnLeftRoom()
+    public override void OnLeftRoom()
     {
         PhotonNetwork.Destroy(player.gameObject);
         PhotonNetwork.LoadLevel("MainMenuScene");
